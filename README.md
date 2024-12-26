@@ -23,7 +23,7 @@ Most of the literature cited focuses on classifying forests to inform abundance 
 
 ## Data
 
-The bird data for this project comes from the first and second Vermont Breeding Bird Atlas, which were conducted from 1974-1979 and 2004-2009. These data are publicly available and can be downloaded from the Global Biodiversity Information Facility (gbif.org). Landcover classification comes from USGS Landsat 5 Level 2, Collection 2, Tier 1 imagery, also publicly accessible through Google Earth Engine. Within Google Earth Engine, the [Awesome Spectral Indices](https://github.com/awesome-spectral-indices/spectral) module and Jeff Howarth’s suite of educational tools were used to process data. 
+The bird data for this project comes from the first and second Vermont Breeding Bird Atlas, which were conducted from 1974-1979 and 2004-2009. These data are publicly available and can be downloaded from the Global Biodiversity Information Facility ([gbif.org](https://www.gbif.org/search?q=vermont%20breeding%20bird%20atlas)). Landcover classification comes from USGS Landsat 5 Level 2, Collection 2, Tier 1 imagery, also publicly accessible through Google Earth Engine. Within Google Earth Engine, the [Awesome Spectral Indices](https://github.com/awesome-spectral-indices/spectral) module and Jeff Howarth’s suite of educational tools were used to process data. 
 
 ## Methods
 
