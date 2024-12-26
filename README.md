@@ -1,6 +1,6 @@
 
 
-# __Exploratory Steps in Understanding Relationships Between Bird Diversity and Landcover Change
+# Exploratory Steps in Understanding Relationships Between Bird Diversity and Landcover Change
 
 ## Introduction
 
