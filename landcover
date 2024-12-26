@@ -1,0 +1,252 @@
+
+Map.clear();
+var atlas1training = ee.FeatureCollection("projects/ee-erising/assets/atlas1_training");
+var atlas2training = ee.FeatureCollection("projects/ee-erising/assets/atlas2_training");
+
+// Rectangle to filter image collection
+var points = [
+  [-72.03565770402803, 43.63514415106321],
+  [-72.03565770402803, 44.09849688945328],
+  [-72.85963231340303, 44.09849688945328],
+  [-72.85963231340303, 43.63514415106321] 
+];
+
+var polygon = ee.Geometry.Polygon([points]);
+
+Map.centerObject(polygon, 8); 
+Map.addLayer(polygon, {color: 'blue'}, 'Polygon');
+
+
+var style = {
+  color: '#FFFFFF',  // White stroke
+  width: 3,          // Thick stroke (adjust width as needed)
+  fillColor: '00000000'  // No fill (transparent)
+};
+
+var RedStyle = {
+  color: 'CD5C5C',        
+  fillColor: '4D5C5C80',  
+  width: 1.5              
+};
+
+var BlueStyle = {
+  color: '1E90FF',       
+  fillColor: '4D90FF80',  
+  width: 1.5              
+};
+//Asset Import
+
+var bounds = ee.FeatureCollection("projects/ee-erising/assets/VT_Bounds");
+var birds = ee.FeatureCollection("projects/ee-erising/assets/occurrence_import_asset");
+var birds76 = ee.FeatureCollection("projects/ee-erising/assets/asset_1976_geom");
+var birdsViz = ee.FeatureCollection("projects/ee-erising/assets/atlas2_footprintViz");
+
+// print(birds.first());
+
+// Map.addLayer(birdsViz.style(RedStyle), {}, "Survey Blocks Second Atlas", true);
+// Map.addLayer(birds76.style(BlueStyle), {}, "Survey Blocks First Atlas", true);
+
+
+var poi = birds.filterBounds(geometry);
+var poi76 = birds76.filterBounds(geometry);
+
+print(
+    "Species seen at survey block",  
+    poi76.first().getString("locality"),
+    "during the first Breeding Bird Atlas:",
+    poi76.first().get("Grand Tota"),
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "Species seen at survey block",
+    poi.first().getString("locality"),
+    "during the second Breeding Bird Atlas:",
+    poi.aggregate_count_distinct("vernacularName"),
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "Survey Block information:",
+    poi);
+    
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+var geo = require("users/jhowarth/eePatterns:modules/geo.js");
+
+print("geo methods dictionary", geo.help);    // Prints dictionary of all tools in module.  
+// print("geo palettes", geo.iPalettes);         // Prints dictionary of all palettes in module. 
+
+
+
+// ------------------------------------------------------------------------
+//  Filter and flatten image collection.   
+// ------------------------------------------------------------------------
+
+// var leafOn_Atlas1 = ee.ImageCollection('LANDSAT/LT05/C02/T1_L2')
+//   .filterBounds(polygon)
+//   .filter(ee.Filter.calendarRange(1984, 1990, 'year'))
+//   .filter(ee.Filter.calendarRange(6, 8, 'month'))
+//   // .filter(ee.Filter.calendarRange(1, 1, 'day_of_year'))
+//   .filter(ee.Filter.lt('CLOUD_COVER', 20))
+//   .map(geo.icLandsat.scale_L5)
+//   .map(geo.icLandsat.cloudMask_L5)
+//   .median()
+//   .clip(bounds)
+// ;
+
+// var leafOff_Atlas1 = ee.ImageCollection('LANDSAT/LT05/C02/T1_L2')
+//   .filterBounds(polygon)
+//   .filter(ee.Filter.calendarRange(1984, 1990, 'year'))
+//   .filter(ee.Filter.calendarRange(10, 11, 'month'))
+//   // .filter(ee.Filter.calendarRange(1, 1, 'day_of_year'))
+//   .filter(ee.Filter.lt('CLOUD_COVER', 20))
+//   .map(geo.icLandsat.scale_L5)
+//   .map(geo.icLandsat.cloudMask_L5)
+//   .median()
+//   .clip(bounds);
+  
+//   var leafOn_Atlas2 = ee.ImageCollection('LANDSAT/LT05/C02/T1_L2')
+//   .filterBounds(polygon)
+//   .filter(ee.Filter.calendarRange(2004, 2009, 'year'))
+//   .filter(ee.Filter.calendarRange(6, 8, 'month'))
+//   // .filter(ee.Filter.calendarRange(1, 1, 'day_of_year'))
+//   .filter(ee.Filter.lt('CLOUD_COVER', 20))
+//   .map(geo.icLandsat.scale_L5)
+//   .map(geo.icLandsat.cloudMask_L5)
+//   .median()
+//   .clip(bounds)
+// ;
+
+// var leafOff_Atlas2 = ee.ImageCollection('LANDSAT/LT05/C02/T1_L2')
+//   .filterBounds(polygon)
+//   .filter(ee.Filter.calendarRange(2004, 2009, 'year'))
+//   .filter(ee.Filter.calendarRange(10, 11, 'month'))
+//   // .filter(ee.Filter.calendarRange(1, 1, 'day_of_year'))
+//   .filter(ee.Filter.lt('CLOUD_COVER', 20))
+//   .map(geo.icLandsat.scale_L5)
+//   .map(geo.icLandsat.cloudMask_L5)
+//   .median()
+//   .clip(bounds);
+  
+// print("Landsat 5 image", output);
+
+// ------------------------------------------------------------------------
+//  Display layer on Map.
+// ------------------------------------------------------------------------
+
+var viz = {
+  bands: ['SR_B3', 'SR_B2', 'SR_B1'],
+  min: [0.0, 0.0, 0.0],
+  max: [0.3, 0.3, 0.3],
+};
+
+// Map.addLayer(leafOn_Atlas1, viz, 'First Atlas, Leaf On');
+// Map.addLayer(leafOn_Atlas2, viz, 'Second Atlas, Leaf On');
+// Map.addLayer(leafOff_Atlas1, viz, 'First Atlas, Leaf Off');
+// Map.addLayer(leafOff_Atlas2, viz, 'Second Atlas, Leaf Off');
+
+
+
+var spectralTool = function(leafOn, leafOff, aoi){
+  
+  var spectral = require("users/dmlmont/spectral:spectral");
+
+  
+  var parameters_On = {
+    "R": leafOn.select("SR_B3"),
+    "G": leafOn.select("SR_B2"),
+    "B": leafOn.select("SR_B1"),
+    "N": leafOn.select("SR_B4"),
+    "S1": leafOn.select("SR_B5"),
+    "S2": leafOn.select("SR_B7")};
+    
+  var parameters_Off = {
+    "R": leafOff.select("SR_B3"),
+    "G": leafOff.select("SR_B2"),
+    "B": leafOff.select("SR_B1"),
+    "N": leafOff.select("SR_B4"),
+    "S1": leafOff.select("SR_B5"),
+    "S2": leafOff.select("SR_B7")};
+    
+    var leafOn_indices = spectral.computeIndex(leafOn,["NDVI", "BLFEI"],parameters_On);
+    var leafOff_indices = spectral.computeIndex(leafOn,["NDVI", "BLFEI"],parameters_Off);
+    var combinedImage = leafOn_indices.addBands(leafOff_indices, ["NDVI"]);
+    
+    return combinedImage.clip(aoi);
+    
+
+};
+
+// var atlas1_image = spectralTool(leafOn_Atlas1, leafOff_Atlas1, bounds);
+// var atlas2_image = spectralTool(leafOn_Atlas2, leafOff_Atlas2, bounds);
+
+
+//~~~~~~~~~~~~~~~~~   RF Stuff    ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+  var predictionBands = [
+    'SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B7', "NDVI", "BLFEI"];
+
+    
+var RF_analysis = function(prediction_bands, training_features, image, fc_property, 
+                            scale, trees, aoi, block_selection_t1,block_selection_t2){
+    
+  var classifierTraining = image.select(prediction_bands)
+    .sampleRegions({
+        collection: training_features,
+        properties: [fc_property],
+        scale: scale});
+  
+  var RFclassifier = ee.Classifier.smileRandomForest(trees).train({
+    features: classifierTraining,
+    classProperty: fc_property,
+    inputProperties: prediction_bands
+});
+  
+  var RFclassified = image.select(prediction_bands).classify(
+    RFclassifier);
+    
+  var classified_remap = RFclassified.remap(
+  [1,2,3,4,5,6],
+  [1,2,3,3,4,5]);
+  
+  var area_of_classes_t1 = geo.iZonal.areaClasses(classified_remap, scale, block_selection_t1, "remapped");
+  var area_of_classes_t2 = geo.iZonal.areaClasses(classified_remap, scale, block_selection_t2, "remapped");
+
+
+var class_percent_of_region_t1 = geo.iZonal.classPercentRegion(area_of_classes_t1);
+var class_percent_of_region_t2 = geo.iZonal.classPercentRegion(area_of_classes_t2);
+
+    print(
+    "Land Cover Comparison as % Block Coverage",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "First Atlas land cover:",
+    class_percent_of_region_t1,
+    "Second Atlas land cover:",
+    class_percent_of_region_t2
+    );
+
+  return classified_remap;
+  
+};
+
+// var atlas1_rf = RF_analysis(predictionBands, atlas1training, atlas1_image, 'Class', 30, 150, birds76, poi76, poi);
+// var atlas2_rf = RF_analysis(predictionBands, atlas2training, atlas2_image, 'Class', 30, 150, birds76, poi76, poi);
+
+// print (atlas1_image.projection().transform());
+
+var rf_viz = {
+    min: 1,
+    max: 5,
+    palette: ['ForestGreen', 'DarkGreen','Goldenrod', 'DodgerBlue', 'IndianRed']
+};
+
+var atlas2_asset = ee.Image("projects/ee-erising/assets/atlas_2_asset");
+var atlas1_asset = ee.Image("projects/ee-erising/assets/atlas1_asset");
+
+Map.addLayer(atlas2_asset.selfMask(), rf_viz, "RF Atlas 2", true);
+Map.addLayer(atlas1_asset.selfMask(), rf_viz, "RF Atlas 1", true);
+
+// Map.addLayer(t1_test, viz, "Test", true);
+// Map.addLayer(leafOff_Atlas1, viz, "leafOff_atlas1", true);
+// Map.addLayer(leafOff_Atlas2, viz, "leafOff_atlas2", true);
+
+
+
+
