@@ -1,7 +1,6 @@
 
 
-<p align="center">
-	
+<p align="center">	
 # Exploratory Steps in Understanding Relationships Between Bird Diversity and Landcover Change
 </p>
 
