@@ -52,6 +52,8 @@ The goal of the application is to serve as a tool to potentially understand how 
 
 Upon initialization, an inset map of breeding bird survey atlas blocks appears in the side bar, color coded by survey year. In the primary map, estimated landcover using the methods described above is generated, and can be explored by zooming and using the swipe feature to quickly visualize differences. If a survey block is selected in the inset map, it will highlight yellow, and three new items generate in the side bar: a chart showing species and family count, a table of bird species from each year (notably, in alphabetic rather than taxonomic order), and a chart of landcover area. The primary map will zoom to the selected block and clear all other blocks. To look at a new survey block, return to the inset map and click on the block of interest. To look at the statewide landcover map, refresh the app. Both figures and the table can be downloaded as .csv, and the figures can also be exported as .png or .svg. 
 
+Refer to the following two annotated images for additional direction. 
+
 ![Document 1](photos/docs1-01.png)
 
 ![Document 2](photos/docs2-02.png)
