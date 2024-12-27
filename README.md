@@ -1,6 +1,6 @@
 
 
-![Cover Photo](photos/docs3-03.png)
+![Cover Photo](photos/docs-03.png)
 
 ### Introduction
 
